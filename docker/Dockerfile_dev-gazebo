@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM osrf/ros:humble-desktop-full AS main-setup
+FROM osrf/ros:humble-simulation AS main-setup
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -9,15 +9,16 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     software-properties-common \
     build-essential  \
     ccache \
+    curl \
     g++ \
     gdb \
     gawk \
     git \
-    tmux \
-    vim \
+    gnupg \
     make \
     cmake \
     ninja-build \
+    lsb-release \
     libtool \
     libxml2-dev \
     libxml2-utils \
@@ -29,6 +30,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libpython3-stdlib \
     libtool-bin \
     zip \
+    tmux \
+    vim \
     default-jre \
     socat \
     ros-dev-tools \
@@ -126,3 +129,8 @@ USER sky
 WORKDIR /home/sky
 
 RUN sudo apt update && sudo apt upgrade -y
+RUN sudo apt install ros-humble-ros-gz -y
+# RUN sudo curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+# RUN sudo apt-get update && sudo apt-get install -y gz-harmonic
+# RUN pip install -U MAVProxy
