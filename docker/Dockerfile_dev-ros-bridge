@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM osrf/ros:humble-desktop-full AS main-setup
+FROM osrf/ros:foxy-ros1-bridge AS main-setup
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -29,11 +29,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     libpython3-stdlib \
     libtool-bin \
     zip \
-    unzip \
     default-jre \
     socat \
     ros-dev-tools \
-    ros-humble-launch-pytest \
     && apt-get clean \
     && apt-get -y autoremove \
     && apt-get autoclean \
@@ -67,17 +65,6 @@ RUN set -eux; \
 	pip --version
 
 RUN python -m pip install --no-cache-dir -U future lxml pexpect flake8 empy==3.3.4 pyelftools tabulate pymavlink pre-commit junitparser
-
-RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
-RUN wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.x.zip
-
-RUN unzip opencv.zip
-RUN unzip opencv_contrib.zip
-
-RUN mkdir -p opencv/build && cd opencv/build
-RUN cmake -DOPENCV_EXTRA_MODULES_PATH=../opencv_contrib-4.x/modules ../opencv-4.x
-RUN cmake --build .
-RUN make install
 
 FROM eclipse-temurin:19-jdk-jammy AS dds-gen-builder
 
@@ -137,6 +124,8 @@ RUN useradd -rm -d /home/sky -s /bin/bash -g root -G sudo -u 1000 sky -p "$(open
 USER sky
 WORKDIR /home/sky
 
-RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+RUN echo "source /opt/ros/foxy/setup.bash" >> ~/.bashrc
+
 
 RUN sudo apt update && sudo apt upgrade -y
