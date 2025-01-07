@@ -28,9 +28,24 @@ Each image is specialized to contain only the necessary tools to build the relat
 
 ## Building
 
+For building ros2 image:
 ```
 cd docker
-docker build -t ardupilot/ardupilot-dev-base -f Dockerfile_dev-base .
+docker build -t ardupilot/ardupilot-dev-ros -f Dockerfile_dev-ros .
+```
+
+For building ros-bridge image: 
+```
+cd docker
+docker build -t ardupilot/ardupilot-dev-ros-bridge -f Dockerfile_dev-ros-bridge .
+```
+
+## Running container
+
+To run the ros bridge container:
+
+```
+docker run -it --name=bridge --net=host --rm ardupilot/ardupilot-dev-ros-bridge bash 
 ```
 
 ## Release
