@@ -141,8 +141,20 @@ RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 RUN sudo apt update && sudo apt upgrade -y
 
-RUN sudo apt-get install ros-humble-mavros ros-humble-mavros-extras -y
+RUN sudo apt-get install ros-humble-mavros ros-humble-mavros-extras -y 
 RUN wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh
 RUN chmod a+x install_geographiclib_datasets.sh
 RUN sudo ./install_geographiclib_datasets.sh
 
+RUN git clone --recurse-submodules https://github.com/SkyRats/ardupilot.git
+RUN cd ardupilot/
+RUN perl -pi -e 's/\r\n|\n|\r/\n/g' ./Tools/environment_install/install-prereqs-ubuntu.sh -y 
+RUN . ~/.profile
+RUN pip3 install mavproxy
+RUN perl -pi -e 's/\r\n|\n|\r/\n/g' ./waf configure --board sitl
+RUN perl -pi -e 's/\r\n|\n|\r/\n/g' ./waf copter
+
+RUN echo "export PATH=$PATH:$HOME/ardupilot/Tools/autotest" >> ~/.bashrc
+RUN echo "export PATH=/usr/lib/ccache:$PATH" >> ~/.bashrc
+RUN echo "alias sa='sim_vehicle.py -v ArduCopter'" >> ~/.bashrc
+RUN echo "alias sag='sim_vehicle.py -v ArduCopter -f gazebo-iris'" >> ~/.bashrc
