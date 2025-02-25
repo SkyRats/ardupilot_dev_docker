@@ -49,22 +49,22 @@ ENV PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/9af82b715db434abb94a0
 ENV PYTHON_GET_PIP_SHA256=45a2bb8bf2bb5eff16fdd00faef6f29731831c7c59bd9fc2bf1f3bed511ff1fe
 
 RUN set -eux; \
-	\
-	wget -O get-pip.py "$PYTHON_GET_PIP_URL"; \
-	echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -; \
-	\
-	export PYTHONDONTWRITEBYTECODE=1; \
-	\
-	python get-pip.py \
-		--disable-pip-version-check \
-		--no-cache-dir \
-		--no-compile \
-		"pip==$PYTHON_PIP_VERSION" \
-		"setuptools==$PYTHON_SETUPTOOLS_VERSION" \
-	; \
-	rm -f get-pip.py; \
-	\
-	pip --version
+    \
+    wget -O get-pip.py "$PYTHON_GET_PIP_URL"; \
+    echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -; \
+    \
+    export PYTHONDONTWRITEBYTECODE=1; \
+    \
+    python get-pip.py \
+    --disable-pip-version-check \
+    --no-cache-dir \
+    --no-compile \
+    "pip==$PYTHON_PIP_VERSION" \
+    "setuptools==$PYTHON_SETUPTOOLS_VERSION" \
+    ; \
+    rm -f get-pip.py; \
+    \
+    pip --version
 
 RUN python -m pip install --no-cache-dir -U future lxml pexpect flake8 empy==3.3.4 pyelftools tabulate pymavlink pre-commit junitparser
 
@@ -106,13 +106,13 @@ ARG ARM_TARBALL="$ARM_ROOT$ARM_ROOT_EXT-x86_64-linux.tar.bz2"
 ARG ARM_TARBALL_URL="https://firmware.ardupilot.org/Tools/STM32-tools/$ARM_TARBALL"
 
 RUN cd /opt \
-	&& wget -qO- "$ARM_TARBALL_URL" | tar jx \
-	&& mv "/opt/$ARM_ROOT$ARM_ROOT_EXT" "/opt/$ARM_ROOT" \
-	&& rm -rf "/opt/$ARM_ROOT/share/doc"
+    && wget -qO- "$ARM_TARBALL_URL" | tar jx \
+    && mv "/opt/$ARM_ROOT$ARM_ROOT_EXT" "/opt/$ARM_ROOT" \
+    && rm -rf "/opt/$ARM_ROOT/share/doc"
 
 # manual ccache setup for arm-none-eabi-g++/arm-none-eabi-gcc
 RUN ln -s /usr/bin/ccache /usr/lib/ccache/arm-none-eabi-g++ \
-	&& ln -s /usr/bin/ccache /usr/lib/ccache/arm-none-eabi-gcc
+    && ln -s /usr/bin/ccache /usr/lib/ccache/arm-none-eabi-gcc
 
 # Set STM32 toolchain to the PATH
 ENV PATH="/opt/$ARM_ROOT/bin:$PATH"
@@ -140,3 +140,9 @@ WORKDIR /home/sky
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 RUN sudo apt update && sudo apt upgrade -y
+
+RUN sudo apt-get install ros-humble-mavros ros-humble-mavros-extras -y
+RUN wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh
+RUN chmod a+x install_geographiclib_datasets.sh
+RUN sudo ./install_geographiclib_datasets.sh
+
