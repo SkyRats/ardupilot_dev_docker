@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM osrf/ros:humble-desktop-full AS main-setup
+FROM osrf/ros:humble-simulation AS main-setup
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -67,6 +67,8 @@ RUN set -eux; \
     pip --version
 
 RUN python -m pip install --no-cache-dir -U future lxml pexpect flake8 empy==3.3.4 pyelftools tabulate pymavlink pre-commit junitparser
+
+# opencv 4.x cpp compilation
 
 RUN wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
 RUN wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.x.zip
@@ -158,3 +160,9 @@ RUN echo "export PATH=$PATH:$HOME/ardupilot/Tools/autotest" >> ~/.bashrc
 RUN echo "export PATH=/usr/lib/ccache:$PATH" >> ~/.bashrc
 RUN echo "alias sa='sim_vehicle.py -v ArduCopter'" >> ~/.bashrc
 RUN echo "alias sag='sim_vehicle.py -v ArduCopter -f gazebo-iris'" >> ~/.bashrc
+
+# XDG_RUNTIME_DIR is needed for gazebo
+ENV XDG_RUNTIME_DIR=/tmp/runtime-sky
+
+# cv_bridge
+RUN sudo apt-get install ros-humble-cv-bridge ros-humble-vision-opencv -y
